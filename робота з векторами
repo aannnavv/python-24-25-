@@ -1,0 +1,14 @@
+import numpy as np
+
+def program_1():
+    x = np.array([6, 2, 0, 3, 0, 0, 5, 7, 0])
+    zero_indices = np.where(x == 0)[0]
+    if zero_indices.size == 0 or zero_indices[0] == 0:
+        return None
+    # Вибираємо елемент, що передує останньому нулю
+    last_zero_index = zero_indices[-1]
+    return x[last_zero_index - 1]
+
+# Виведення результату
+result_1 = program_1()
+print("Елемент перед останнім нулем:", result_1)
