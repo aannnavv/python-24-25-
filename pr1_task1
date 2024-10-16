@@ -1,0 +1,70 @@
+import numpy as np
+
+# a. Створення квадратної матриці (n × n), знаходження детермінанта та оберненої матриці
+n = 4  # Розмір матриці згідно з варіантом
+
+# Заповнення матриці за правилом: a_ij = (1 + 3i)^(j - 2)
+matrix = np.fromfunction(lambda i, j: (1 + 3 * (i + 1))**(j - 2), (n, n), dtype=float)
+print("Квадратна матриця:")
+print(matrix)
+
+# Знаходимо детермінант
+det_matrix = np.linalg.det(matrix)
+print(f"Детермінант матриці: {det_matrix}")
+
+# Знаходимо обернену матрицю, якщо детермінант не дорівнює нулю
+if det_matrix != 0:
+    inv_matrix = np.linalg.inv(matrix)
+    print("Обернена матриця:")
+    print(inv_matrix)
+else:
+    print("Матриця є виродженою, тому оберненої матриці не існує.")
+
+# b. Задання двох векторів: один з дійсними числами, другий з цілими
+m = 3  # Розмір векторів згідно з варіантом
+vector_real = np.random.rand(m)  # Вектор з дійсними числами
+vector_int = np.random.randint(1, 10, m)  # Вектор з цілими числами
+
+print("\nВектор з дійсними числами:")
+print(vector_real)
+
+print("\nВектор з цілими числами:")
+print(vector_int)
+
+# Сума векторів
+vector_sum = vector_real + vector_int
+print("\nСума векторів:")
+print(vector_sum)
+
+# Поелементний добуток векторів
+vector_product = vector_real * vector_int
+print("\nПоелементний добуток векторів:")
+print(vector_product)
+
+# c. Задання двох матриць та знаходження їх добутку
+# Матриця розміру n × m
+matrix_A = np.random.rand(n, m)
+print("\nМатриця A (n × m):")
+print(matrix_A)
+
+# Матриця розміру m × n
+matrix_B = np.random.rand(m, n)
+print("\nМатриця B (m × n):")
+print(matrix_B)
+
+# Добуток матриць A та B
+matrix_product = np.dot(matrix_A, matrix_B)
+print("\nДобуток матриць A і B:")
+print(matrix_product)
+
+# d. Добуток матриць і векторів
+# Перший варіант: добуток квадратної матриці і вектора з дійсними числами
+matrix_vector_product_1 = np.dot(matrix, vector_real)
+print("\nДобуток квадратної матриці і вектора з дійсними числами:")
+print(matrix_vector_product_1)
+
+# Другий варіант: добуток прямокутної матриці A і вектора з цілими числами
+matrix_vector_product_2 = np.dot(matrix_A, vector_int)  # Вектор розміром m
+print("\nДобуток матриці A і вектора з цілими числами:")
+print(matrix_vector_product_2)
+
