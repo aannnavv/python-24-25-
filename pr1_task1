@@ -4,7 +4,7 @@ import numpy as np
 n = 4  # Розмір матриці згідно з варіантом
 
 # Заповнення матриці за правилом: a_ij = (1 + 3i)^(j - 2)
-matrix = np.fromfunction(lambda i, j: (1 + 3 * (i + 1))**(j - 2), (n, n), dtype=float)
+matrix = np.fromfunction(lambda i, j: (1 + 3 * (i + 1))**(j - 2.0), (n, n), dtype=float)
 print("Квадратна матриця:")
 print(matrix)
 
@@ -37,9 +37,14 @@ print("\nСума векторів:")
 print(vector_sum)
 
 # Поелементний добуток векторів
-vector_product = vector_real * vector_int
+elementwise_product = vector_real * vector_int
 print("\nПоелементний добуток векторів:")
-print(vector_product)
+print(elementwise_product)
+
+# Скалярний добуток векторів
+dot_product = np.dot(vector_real, vector_int)
+print("\nСкалярний добуток векторів:")
+print(dot_product)
 
 # c. Задання двох матриць та знаходження їх добутку
 # Матриця розміру n × m
@@ -59,7 +64,7 @@ print(matrix_product)
 
 # d. Добуток матриць і векторів
 # Перший варіант: добуток квадратної матриці і вектора з дійсними числами
-matrix_vector_product_1 = np.dot(matrix, vector_real)
+matrix_vector_product_1 = np.dot(matrix, vector_real[:n])  # Зменшуємо розмір вектора до n для коректного множення
 print("\nДобуток квадратної матриці і вектора з дійсними числами:")
 print(matrix_vector_product_1)
 
@@ -67,4 +72,9 @@ print(matrix_vector_product_1)
 matrix_vector_product_2 = np.dot(matrix_A, vector_int)  # Вектор розміром m
 print("\nДобуток матриці A і вектора з цілими числами:")
 print(matrix_vector_product_2)
+
+# Додатковий добуток: Вектор на матрицю B (m × n)
+vector_matrix_product = np.dot(vector_int, matrix_B)  # Вектор розміром m на матрицю B
+print("\nДобуток вектора з цілими числами і матриці B:")
+print(vector_matrix_product)
 
