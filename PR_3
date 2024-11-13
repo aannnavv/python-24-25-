@@ -1,0 +1,74 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Функція активації (сигмоїдна функція) та її похідна
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+# Прямий прохід
+def forward(X, w1, w2, w3):
+    layer1 = sigmoid(np.dot(X, w1))
+    layer2 = sigmoid(np.dot(layer1, w2))
+    output = sigmoid(np.dot(layer2, w3))
+    return layer1, layer2, output
+
+# Зворотний прохід та оновлення ваг
+def backpropagation(X, y, w1, w2, w3, epochs, lr):
+    errors = []
+    for epoch in range(epochs):
+        # Прямий прохід
+        layer1, layer2, output = forward(X, w1, w2, w3)
+
+        # Обчислення похибки
+        error = y - output
+        errors.append(np.mean(np.abs(error)))
+
+        # Зворотний прохід
+        delta_output = error * sigmoid_derivative(output)
+        delta_layer2 = np.dot(delta_output, w3.T) * sigmoid_derivative(layer2)
+        delta_layer1 = np.dot(delta_layer2, w2.T) * sigmoid_derivative(layer1)
+
+        # Оновлення ваг
+        w3 += lr * np.dot(layer2.T, delta_output)
+        w2 += lr * np.dot(layer1.T, delta_layer2)
+        w1 += lr * np.dot(X.T, delta_layer1)
+
+    plt.plot(errors, color='r')
+    plt.xlabel('Epochs')
+    plt.ylabel('Mean Absolute Error')
+    plt.show()
+
+    return w1, w2, w3
+
+# Ініціалізація вагів та навчальні дані
+input_size = 3
+hidden_size1 = 4
+hidden_size2 = 3
+output_size = 2
+
+np.random.seed(42)
+w1 = np.random.rand(input_size, hidden_size1) - 0.5
+w2 = np.random.rand(hidden_size1, hidden_size2) - 0.5
+w3 = np.random.rand(hidden_size2, output_size) - 0.5
+
+X_train = np.array([[0.5, 0.5, 0.1],
+                    [0.5, -0.2, 0.4],
+                    [0.3, 0.6, 0.7]])
+
+y_train = np.array([[0.6, 0.3],
+                    [0.25, 0.5],
+                    [0.4, 0.7]])
+
+# Навчання моделі
+epochs = 500
+learning_rate = 0.25
+trained_w1, trained_w2, trained_w3 = backpropagation(X_train, y_train, w1, w2, w3, epochs, learning_rate)
+
+# Виведення результатів
+print("Результуючі ваги:")
+print("W1:\n", trained_w1)
+print("W2:\n", trained_w2)
+print("W3:\n", trained_w3)
