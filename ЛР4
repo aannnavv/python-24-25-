@@ -1,0 +1,97 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_classification, make_regression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, classification_report, r2_score, mean_absolute_error, mean_squared_error
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Input, Dropout
+from tensorflow.keras.optimizers import SGD
+
+# Параметри
+variant = 4
+n_points = 100 + 2 * variant
+classification_features = 3
+classification_classes = 4
+regression_features = 3
+regression_targets = 1
+
+# Генерація даних
+X_class, y_class = make_classification(
+    n_samples=n_points,
+    n_features=classification_features,
+    n_informative=2,
+    n_redundant=0,
+    n_repeated=0,
+    n_classes=classification_classes,
+    n_clusters_per_class=1,
+    random_state=variant
+)
+
+X_reg, y_reg = make_regression(
+    n_samples=n_points,
+    n_features=regression_features,
+    n_targets=regression_targets,
+    noise=0.1,
+    random_state=variant
+)
+
+# Візуалізація класифікаційного набору
+plt.figure(figsize=(8, 6))
+for i in range(classification_classes):
+    plt.scatter(X_class[y_class == i, 0], X_class[y_class == i, 1], label=f"Class {i}")
+plt.title("Класифікаційний набір")
+plt.xlabel("Feature 1")
+plt.ylabel("Feature 2")
+plt.legend()
+plt.show()
+
+# Розбиття на тренувальні та тестові набори
+X_class_train, X_class_test, y_class_train, y_class_test = train_test_split(
+    X_class, y_class, test_size=0.2, random_state=42
+)
+X_reg_train, X_reg_test, y_reg_train, y_reg_test = train_test_split(
+    X_reg, y_reg, test_size=0.2, random_state=42
+)
+
+# Масштабування даних
+scaler_class = StandardScaler()
+X_class_train_scaled = scaler_class.fit_transform(X_class_train)
+X_class_test_scaled = scaler_class.transform(X_class_test)
+
+scaler_reg = StandardScaler()
+X_reg_train_scaled = scaler_reg.fit_transform(X_reg_train)
+X_reg_test_scaled = scaler_reg.transform(X_reg_test)
+
+# Модель для класифікації
+model_class = Sequential([
+    Input(shape=(classification_features,)),
+    Dense(10, activation='sigmoid'),
+    Dense(classification_classes, activation='softmax')
+])
+optimizer_class = SGD(learning_rate=0.05)  # Зменшено для стабільності
+model_class.compile(optimizer=optimizer_class, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model_class.fit(X_class_train_scaled, y_class_train, epochs=500, verbose=0)
+
+# Оцінка моделі класифікації
+y_class_pred = np.argmax(model_class.predict(X_class_test_scaled), axis=1)
+print("Classification Accuracy:", accuracy_score(y_class_test, y_class_pred))
+print("Classification Report:\n", classification_report(y_class_test, y_class_pred))
+
+# Модель для регресії
+model_reg = Sequential([
+    Input(shape=(regression_features,)),
+    Dense(10, activation='sigmoid'),
+    Dropout(0.2),  # Регуляризація для стабільності
+    Dense(1)
+])
+optimizer_reg = SGD(learning_rate=0.01)  # Зменшено для стабільності
+model_reg.compile(optimizer=optimizer_reg, loss='mse', metrics=['mae', 'mse'])
+model_reg.fit(X_reg_train_scaled, y_reg_train, epochs=500, verbose=0)
+
+# Оцінка моделі регресії
+y_reg_pred = model_reg.predict(X_reg_test_scaled).flatten()
+y_reg_pred = np.nan_to_num(y_reg_pred)  # Замінюємо NaN на 0
+print("Regression R2 Score:", r2_score(y_reg_test, y_reg_pred))
+print("Regression MAE:", mean_absolute_error(y_reg_test, y_reg_pred))
+print("Regression MSE:", mean_squared_error(y_reg_test, y_reg_pred))
